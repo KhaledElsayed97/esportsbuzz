@@ -1,6 +1,7 @@
 package com.kholiodev.core.ui.theme
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -216,9 +217,10 @@ fun AppTheme(
         LocalGradientColors provides gradientColors,
         LocalBackgroundTheme provides backgroundTheme,
     ) {
+        Log.d("typography", PoppinsTypography.toString())
         MaterialTheme(
             colorScheme = colorScheme,
-            typography = Typography,
+            typography = PoppinsTypography,
             content = content,
         )
     }

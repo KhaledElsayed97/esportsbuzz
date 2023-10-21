@@ -1,5 +1,8 @@
 package com.kholiodev.esportsbuzz.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
@@ -47,6 +50,7 @@ import com.kholiodev.core.ui.theme.GradientColors
 import com.kholiodev.core.ui.theme.LocalGradientColors
 import com.kholiodev.esportsbuzz.navigation.AppNavHost
 import com.kholiodev.esportsbuzz.navigation.TopLevelDestination
+import com.kholiodev.onboarding.navigation.onboardingRoute
 import com.kholiodev.matches.R as matchesR
 
 @OptIn(
@@ -56,21 +60,21 @@ import com.kholiodev.matches.R as matchesR
 )
 @Composable
 fun App(
-    appState: AppState = rememberAppState(
-    ),
+    appState: AppState = rememberAppState(),
 ) {
     val shouldShowGradientBackground =
         appState.currentTopLevelDestination == TopLevelDestination.MATCHES
     var showSettingsDialog by rememberSaveable {
         mutableStateOf(false)
     }
+    val shouldShowBottomBar = appState.currentDestination?.route != onboardingRoute
 
-    com.kholiodev.core.ui.components.AppBackground {
-        com.kholiodev.core.ui.components.AppGradientBackground(
+    AppBackground {
+        AppGradientBackground(
             gradientColors = if (shouldShowGradientBackground) {
-                com.kholiodev.core.ui.theme.LocalGradientColors.current
+                LocalGradientColors.current
             } else {
-                com.kholiodev.core.ui.theme.GradientColors()
+                GradientColors()
             },
         ) {
             val snackbarHostState = remember { SnackbarHostState() }
@@ -93,7 +97,8 @@ fun App(
                     EbuzzBottomAppBar(
                         destinations = appState.topLevelDestinations,
                         onNavigateToDestination = appState::navigateToTopLevelDestination,
-                        currentDestination = appState.currentDestination
+                        currentDestination = appState.currentDestination,
+                        shouldShowBotBar = shouldShowBottomBar
                     )
                 },
             ) { padding ->
@@ -146,33 +151,40 @@ fun EbuzzBottomAppBar(
     destinations: List<TopLevelDestination>,
     onNavigateToDestination: (TopLevelDestination) -> Unit,
     currentDestination: NavDestination?,
+    shouldShowBotBar:Boolean = false,
     modifier: Modifier = Modifier,
 
     ) {
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    com.kholiodev.core.ui.components.EbuzzNavigationBar(
-        modifier = modifier,
-    ) {
-        destinations.forEach { destination ->
-            val selected = currentDestination?.route == currentBackStackEntry?.destination?.route
-            EbuzzNavigationBarItem(
-                selected = selected,
-                onClick = { onNavigateToDestination(destination) },
-                icon = {
-                    Icon(
-                        imageVector = destination.unselectedIcon,
-                        contentDescription = null,
-                    )
-                },
-                selectedIcon = {
-                    Icon(
-                        imageVector = destination.selectedIcon,
-                        contentDescription = null,
-                    )
-                },
-                label = { Text(stringResource(destination.iconTextId)) },
-            )
+    AnimatedVisibility(
+        visible = shouldShowBotBar,
+        enter = slideInVertically(initialOffsetY = { it }),
+        exit = slideOutVertically(targetOffsetY = { it })) {
+        EbuzzNavigationBar(
+            modifier = modifier,
+        ) {
+            destinations.forEach { destination ->
+                val selected =
+                    currentDestination?.route == currentBackStackEntry?.destination?.route
+                EbuzzNavigationBarItem(
+                    selected = selected,
+                    onClick = { onNavigateToDestination(destination) },
+                    icon = {
+                        Icon(
+                            imageVector = destination.unselectedIcon,
+                            contentDescription = null,
+                        )
+                    },
+                    selectedIcon = {
+                        Icon(
+                            imageVector = destination.selectedIcon,
+                            contentDescription = null,
+                        )
+                    },
+                    label = { Text(stringResource(destination.iconTextId)) },
+                )
+            }
         }
     }
 }

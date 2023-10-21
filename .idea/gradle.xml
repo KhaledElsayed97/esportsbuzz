@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/domain" />
             <option value="$PROJECT_DIR$/features" />
             <option value="$PROJECT_DIR$/features/matches" />
+            <option value="$PROJECT_DIR$/features/onboarding" />
           </set>
         </option>
       </GradleProjectSettings>

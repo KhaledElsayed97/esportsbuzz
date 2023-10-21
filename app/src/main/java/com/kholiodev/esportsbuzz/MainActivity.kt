@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
                 onDispose {}
             }
 
-            AppTheme(darkTheme = true) {
+            AppTheme() {
                 App()
             }
         }
