@@ -1,7 +1,9 @@
 package com.kholiodev.onboarding
 
+import androidx.annotation.RawRes
+
 data class OnboardingPage(
-    var onboardingImage: Int,
+    @RawRes var resId: Int,
     var title: String,
     var description:String
 )

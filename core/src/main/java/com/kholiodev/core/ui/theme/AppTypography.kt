@@ -21,6 +21,10 @@ val PoppinsTypography = Typography(
         fontFamily = poppinsFontFamily,
         fontWeight = FontWeight.Bold
     ),
+    headlineMedium = Typography().headlineMedium.copy(
+        fontFamily = poppinsFontFamily,
+        fontWeight = FontWeight.Bold
+    ),
     bodyMedium = Typography().bodyMedium.copy(
         fontFamily = poppinsFontFamily
     ),

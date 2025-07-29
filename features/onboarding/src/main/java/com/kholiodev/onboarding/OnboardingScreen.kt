@@ -13,17 +13,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +36,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.kholiodev.core.ui.theme.AppTheme
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -42,12 +50,20 @@ internal fun OnboardingScreen(
 ) {
     val onboardingPagesList = listOf(
         OnboardingPage(
-            R.drawable.onboarding1,
-            "Never miss a match",
-            "Description"
+            R.raw.ill_gamers,
+            "Follow Your Favorite Gamer",
+            "Keep track of what your favorite player is doing"
         ),
-        OnboardingPage(R.drawable.onboarding2, "Never miss a match", "Description"),
-        OnboardingPage(R.drawable.onboarding1, "Title3", "Description")
+        OnboardingPage(
+            R.raw.ill_schedule,
+            "Never Miss A Match",
+            "Matches timings and dates all in one place"
+        ),
+        OnboardingPage(
+            R.raw.ill_scores,
+            "Know Every Result",
+            "Tournaments results and standings just one click away"
+        )
     )
 
     val pagerState = rememberPagerState(
@@ -59,9 +75,18 @@ internal fun OnboardingScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         HorizontalPager(state = pagerState) { pagerIndex ->
-            OnboardingPager(onboardingPage = onboardingPagesList[pagerIndex])
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.RawRes(
+                    onboardingPagesList[pagerIndex].resId
+                )
+            )
+            composition?.let {
+                OnboardingPager(
+                    onboardingPage = onboardingPagesList[pagerIndex],
+                    it
+                )
+            }
         }
-        Spacer(modifier.weight(1f,true))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -69,15 +94,22 @@ internal fun OnboardingScreen(
                 .weight(1f),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            HorizontalPagerIndicator(
-                pagerState = pagerState,
-                onBoardingPageList = onboardingPagesList
-            )
+            AnimatedVisibility(
+                visible = pagerState.currentPage != 2,
+                modifier = Modifier.fillMaxWidth(),
+                exit = ExitTransition.None
+            ) {
+                HorizontalPagerIndicator(
+                    pagerState = pagerState,
+                    onBoardingPageList = onboardingPagesList
+                )
+            }
             FinishButton(
                 modifier = Modifier,
-                pagerState = pagerState
-            ) {
-            }
+                pagerState = pagerState,
+                onClick = {},
+                onBoardingPageList = onboardingPagesList
+            )
         }
     }
 }
@@ -88,11 +120,6 @@ fun HorizontalPagerIndicator(
     pagerState: PagerState,
     onBoardingPageList: List<OnboardingPage>
 ) {
-    AnimatedVisibility(
-        visible = pagerState.currentPage != 2,
-        modifier = Modifier.fillMaxWidth(),
-        exit = ExitTransition.None
-    ) {
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.Bottom
@@ -111,29 +138,33 @@ fun HorizontalPagerIndicator(
                 )
             }
         }
-    }
 }
 
 @Composable
-fun OnboardingPager(onboardingPage: OnboardingPage) {
+fun OnboardingPager(onboardingPage: OnboardingPage, lottieComposition: LottieComposition) {
     Column(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .fillMaxHeight(0.8f),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
         Image(
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.6f),
-            painter = painterResource(id = onboardingPage.onboardingImage),
+                .fillMaxWidth(0.7f)
+                .padding(top = 48.dp),
+            painter = painterResource(id = R.drawable.ic_logo),
             contentDescription = "Image",
             contentScale = ContentScale.Crop
         )
+        LottieAnimation(
+            composition = lottieComposition,
+            iterations = LottieConstants.IterateForever,
+            modifier = Modifier.fillMaxHeight(0.6f)
+        )
         Text(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
+                .fillMaxWidth(),
             text = onboardingPage.title,
             style = MaterialTheme.typography.headlineLarge,
             textAlign = TextAlign.Center
@@ -153,7 +184,10 @@ fun OnboardingPager(onboardingPage: OnboardingPage) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FinishButton(modifier: Modifier, pagerState: PagerState, onClick: () -> Unit) {
+fun FinishButton(
+    modifier: Modifier, pagerState: PagerState, onClick: () -> Unit,
+    onBoardingPageList: List<OnboardingPage>
+) {
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.Top,
@@ -168,7 +202,7 @@ fun FinishButton(modifier: Modifier, pagerState: PagerState, onClick: () -> Unit
                 colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.primary)
             ) {
                 Text(
-                    text = "FINISH",
+                    text = "GET STARTED",
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.White
                 )
@@ -182,7 +216,6 @@ fun FinishButton(modifier: Modifier, pagerState: PagerState, onClick: () -> Unit
 @Composable
 fun OnboardingPagePreview() {
     AppTheme {
-        OnboardingPager(OnboardingPage(R.drawable.onboarding2, "Title", "Description"))
     }
 }
 
