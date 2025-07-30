@@ -52,6 +52,8 @@ android {
 dependencies {
     implementation(projects.features.matches)
     implementation(projects.features.onboarding)
+    implementation(projects.features.news)
+    implementation(projects.features.following)
     implementation(projects.core)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtimeCompose)

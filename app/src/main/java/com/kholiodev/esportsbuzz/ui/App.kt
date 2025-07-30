@@ -13,45 +13,58 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.kholiodev.core.ui.components.AppBackground
 import com.kholiodev.core.ui.components.AppGradientBackground
 import com.kholiodev.core.ui.components.EbuzzNavigationBar
 import com.kholiodev.core.ui.components.EbuzzNavigationBarItem
-import com.kholiodev.core.ui.components.EbuzzTopAppBar
 import com.kholiodev.core.ui.theme.GradientColors
 import com.kholiodev.core.ui.theme.LocalGradientColors
 import com.kholiodev.esportsbuzz.navigation.AppNavHost
 import com.kholiodev.esportsbuzz.navigation.TopLevelDestination
 import com.kholiodev.onboarding.navigation.onboardingRoute
+import com.kholiodev.matches.navigation.matchesRoute
+import com.kholiodev.news.navigation.newsRoute
+import com.kholiodev.following.navigation.followingRoute
+import kotlinx.coroutines.launch
 import com.kholiodev.matches.R as matchesR
+import com.kholiodev.news.R as newsR
+import com.kholiodev.following.R as followingR
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -68,7 +81,8 @@ fun App(
         mutableStateOf(false)
     }
     val shouldShowBottomBar = appState.currentDestination?.route != onboardingRoute
-
+    var liveFilterChecked by rememberSaveable { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
     AppBackground {
         AppGradientBackground(
             gradientColors = if (shouldShowGradientBackground) {
@@ -77,14 +91,6 @@ fun App(
                 GradientColors()
             },
         ) {
-            val snackbarHostState = remember { SnackbarHostState() }
-
-//            if (showSettingsDialog) {
-//                SettingsDialog(
-//                    onDismiss = { showSettingsDialog = false },
-//                )
-//            }
-
             Scaffold(
                 modifier = Modifier.semantics {
                     testTagsAsResourceId = true
@@ -114,32 +120,37 @@ fun App(
                         ),
                 ) {
                     Column(Modifier.fillMaxSize()) {
-                        // Show the top app bar on top level destinations.
                         val destination = appState.currentTopLevelDestination
                         if (destination != null) {
                             com.kholiodev.core.ui.components.EbuzzTopAppBar(
-                                titleRes = destination.titleId,
-                                navigationIcon = Icons.Default.Search,
-                                navigationIconContentDescription = stringResource(
-                                    id = matchesR.string.matches,
-                                ),
-                                actionIcon = Icons.Default.Settings,
-                                actionIconContentDescription = stringResource(
-                                    id = matchesR.string.matches,
-                                ),
-                                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                                    containerColor = Color.Transparent,
-                                ),
-                                onActionClick = { showSettingsDialog = true },
-                                onNavigationClick = { appState.navigateToSearch() },
+                                titleRes = matchesR.string.app_name, // Use your app name string resource
+                                showNavigationIcon = false,
+                                onNavigationClick = null,
+                                showLiveFilter = destination == TopLevelDestination.MATCHES,
+                                liveFilterChecked = liveFilterChecked,
+                                onLiveFilterChange = { checked ->
+                                    liveFilterChecked = checked
+                                    // Show snackbar for demo
+                                    kotlinx.coroutines.GlobalScope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            if (checked) "Live matches only" else "All matches"
+                                        )
+                                    }
+                                },
+                                onSearchClick = {
+                                    kotlinx.coroutines.GlobalScope.launch {
+                                        snackbarHostState.showSnackbar("Search clicked")
+                                    }
+                                },
+                                onCalendarClick = {
+                                    kotlinx.coroutines.GlobalScope.launch {
+                                        snackbarHostState.showSnackbar("Calendar clicked")
+                                    }
+                                },
                             )
                         }
-
                         AppNavHost(appState = appState)
                     }
-
-                    // TODO: We may want to add padding or spacer when the snackbar is shown so that
-                    //  content doesn't display behind it.
                 }
             }
         }
@@ -151,35 +162,38 @@ fun EbuzzBottomAppBar(
     destinations: List<TopLevelDestination>,
     onNavigateToDestination: (TopLevelDestination) -> Unit,
     currentDestination: NavDestination?,
-    shouldShowBotBar:Boolean = false,
+    shouldShowBotBar: Boolean = false,
     modifier: Modifier = Modifier,
-
-    ) {
-    val navController = rememberNavController()
-    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+) {
     AnimatedVisibility(
         visible = shouldShowBotBar,
         enter = slideInVertically(initialOffsetY = { it }),
-        exit = slideOutVertically(targetOffsetY = { it })) {
+        exit = slideOutVertically(targetOffsetY = { it })
+    ) {
         EbuzzNavigationBar(
             modifier = modifier,
         ) {
             destinations.forEach { destination ->
-                val selected =
-                    currentDestination?.route == currentBackStackEntry?.destination?.route
+                val selected = when (destination) {
+                    TopLevelDestination.MATCHES -> currentDestination?.route == matchesRoute
+                    TopLevelDestination.NEWS -> currentDestination?.route == newsRoute
+                    TopLevelDestination.FOLLOWING -> currentDestination?.route == followingRoute
+                }
                 EbuzzNavigationBarItem(
                     selected = selected,
                     onClick = { onNavigateToDestination(destination) },
                     icon = {
                         Icon(
-                            imageVector = destination.unselectedIcon,
+                            imageVector = ImageVector.vectorResource(destination.unselectedIcon),
                             contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
                     },
                     selectedIcon = {
                         Icon(
-                            imageVector = destination.selectedIcon,
+                            imageVector = ImageVector.vectorResource(destination.selectedIcon ),
                             contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
                     },
                     label = { Text(stringResource(destination.iconTextId)) },

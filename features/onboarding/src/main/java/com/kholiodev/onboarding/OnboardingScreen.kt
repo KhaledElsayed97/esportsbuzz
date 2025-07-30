@@ -46,7 +46,8 @@ import com.kholiodev.core.ui.theme.AppTheme
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun OnboardingScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onGetStarted: () -> Unit = {},
 ) {
     val onboardingPagesList = listOf(
         OnboardingPage(
@@ -107,7 +108,7 @@ internal fun OnboardingScreen(
             FinishButton(
                 modifier = Modifier,
                 pagerState = pagerState,
-                onClick = {},
+                onClick = onGetStarted,
                 onBoardingPageList = onboardingPagesList
             )
         }
