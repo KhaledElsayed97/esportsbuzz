@@ -13,6 +13,10 @@ import androidx.navigation.navOptions
 import com.kholiodev.esportsbuzz.navigation.TopLevelDestination
 import com.kholiodev.matches.navigation.matchesRoute
 import com.kholiodev.matches.navigation.navigateToMatches
+import com.kholiodev.news.navigation.newsRoute
+import com.kholiodev.news.navigation.navigateToNews
+import com.kholiodev.following.navigation.followingRoute
+import com.kholiodev.following.navigation.navigateToFollowing
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -38,6 +42,8 @@ class AppState(
     val currentTopLevelDestination: TopLevelDestination?
         @Composable get() = when (currentDestination?.route) {
             matchesRoute -> TopLevelDestination.MATCHES
+            newsRoute -> TopLevelDestination.NEWS
+            followingRoute -> TopLevelDestination.FOLLOWING
             else -> null
         }
 
@@ -53,6 +59,8 @@ class AppState(
 
             when (topLevelDestination) {
                 TopLevelDestination.MATCHES -> navController.navigateToMatches(topLevelNavOptions)
+                TopLevelDestination.NEWS -> navController.navigateToNews(topLevelNavOptions)
+                TopLevelDestination.FOLLOWING -> navController.navigateToFollowing(topLevelNavOptions)
             }
     }
 
