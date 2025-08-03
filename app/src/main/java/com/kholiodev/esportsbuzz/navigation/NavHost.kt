@@ -10,6 +10,7 @@ import com.kholiodev.onboarding.navigation.onboardingRoute
 import com.kholiodev.onboarding.navigation.onboardingScreen
 import com.kholiodev.news.navigation.newsScreen
 import com.kholiodev.following.navigation.followingScreen
+import com.kholiodev.following.navigation.navigateToGameDetails
 
 @Composable
 fun AppNavHost(
@@ -25,7 +26,14 @@ fun AppNavHost(
     ) {
         matchesScreen(onTopicClick = {})
         newsScreen(onNewsClick = {})
-        followingScreen(onItemClick = {})
+        followingScreen(
+            onItemClick = { gameId ->
+                navController.navigateToGameDetails(gameId)
+            },
+            onBackClick = {
+                navController.popBackStack()
+            }
+        )
         onboardingScreen(onGetStarted = {
             navController.navigateToMatches()
         })

@@ -15,26 +15,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -42,29 +33,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import com.kholiodev.core.ui.components.AppBackground
 import com.kholiodev.core.ui.components.AppGradientBackground
 import com.kholiodev.core.ui.components.EbuzzNavigationBar
 import com.kholiodev.core.ui.components.EbuzzNavigationBarItem
+import com.kholiodev.core.ui.theme.AppTheme
 import com.kholiodev.core.ui.theme.GradientColors
 import com.kholiodev.core.ui.theme.LocalGradientColors
 import com.kholiodev.esportsbuzz.navigation.AppNavHost
 import com.kholiodev.esportsbuzz.navigation.TopLevelDestination
-import com.kholiodev.onboarding.navigation.onboardingRoute
+import com.kholiodev.following.navigation.followingRoute
 import com.kholiodev.matches.navigation.matchesRoute
 import com.kholiodev.news.navigation.newsRoute
-import com.kholiodev.following.navigation.followingRoute
+import com.kholiodev.onboarding.navigation.onboardingRoute
 import kotlinx.coroutines.launch
 import com.kholiodev.matches.R as matchesR
-import com.kholiodev.news.R as newsR
-import com.kholiodev.following.R as followingR
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -83,14 +72,16 @@ fun App(
     val shouldShowBottomBar = appState.currentDestination?.route != onboardingRoute
     var liveFilterChecked by rememberSaveable { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
-    AppBackground {
-        AppGradientBackground(
-            gradientColors = if (shouldShowGradientBackground) {
-                LocalGradientColors.current
-            } else {
-                GradientColors()
-            },
-        ) {
+    
+    AppTheme(gamingTheme = false) {
+        AppBackground {
+            AppGradientBackground(
+                gradientColors = if (shouldShowGradientBackground) {
+                    LocalGradientColors.current
+                } else {
+                    GradientColors()
+                },
+            ) {
             Scaffold(
                 modifier = Modifier.semantics {
                     testTagsAsResourceId = true
@@ -155,6 +146,13 @@ fun App(
             }
         }
     }
+    }
+}
+
+@Preview
+@Composable
+fun AppPreview() {
+    App()
 }
 
 @Composable

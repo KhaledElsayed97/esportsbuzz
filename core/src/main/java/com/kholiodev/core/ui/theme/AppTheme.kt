@@ -145,6 +145,89 @@ val DarkAndroidColorScheme = darkColorScheme(
 )
 
 /**
+ * Black and Red Gaming Theme
+ */
+@VisibleForTesting
+val BlackRedGamingColorScheme = darkColorScheme(
+    primary = Color(0xFFFF3D3D),              // Bright red
+    onPrimary = Color.Black,
+    primaryContainer = Color(0xFF5B0000),     // Still dark, but slightly warmer
+    onPrimaryContainer = Color(0xFFFFC1C1),   // Brighter blush
+
+    secondary = Color(0xFFFF6B6B),            // Lighter vibrant red-pink
+    onSecondary = Color.Black,
+    secondaryContainer = Color(0xFF6B1B1B),   // Muted warm red
+    onSecondaryContainer = Color(0xFFFFD4D4),
+
+    tertiary = Color(0xFFFF9AA2),             // Warm coral-pink
+    onTertiary = Color.Black,
+    tertiaryContainer = Color(0xFF652C36),    // Dark muted rose
+    onTertiaryContainer = Color(0xFFFFE3E8),
+
+    error = Color(0xFFFF5C5C),                // Bright but not neon red
+    onError = Color.Black,
+    errorContainer = Color(0xFF8B0000),
+    onErrorContainer = Color.White,
+
+    background = Color(0xFF1A1A1A),           // Dark gray instead of black
+    onBackground = Color(0xFFF0EAEA),         // Soft off-white with red tint
+
+    surface = Color(0xFF2D2D2D),              // Lighter surface for cards
+    onSurface = Color(0xFFF5EDED),            // Even softer for text
+
+    surfaceVariant = Color(0xFF3D2A2A),       // Slightly lighter red-brown
+    onSurfaceVariant = Color(0xFFE3BDBD),
+
+    inverseSurface = Color(0xFFF4F0F0),
+    inverseOnSurface = Color(0xFF300000),
+
+    outline = Color(0xFFE57373)
+
+)
+
+//val BlackRedGamingColorScheme = darkColorScheme(
+//    primary = Color(0xFFFF1744), // Bright red
+//    onPrimary = Color.Black,
+//    primaryContainer = Color(0xFF8B0000), // Dark red
+//    onPrimaryContainer = Color.White,
+//    secondary = Color(0xFFFF5252), // Lighter red
+//    onSecondary = Color.Black,
+//    secondaryContainer = Color(0xFF6A0000), // Very dark red
+//    onSecondaryContainer = Color.White,
+//    tertiary = Color(0xFFFF8A80), // Light red
+//    onTertiary = Color.Black,
+//    tertiaryContainer = Color(0xFF4A0000), // Very dark red
+//    onTertiaryContainer = Color.White,
+//    error = Color(0xFFFF1744), // Bright red for errors
+//    onError = Color.Black,
+//    errorContainer = Color(0xFF8B0000),
+//    onErrorContainer = Color.White,
+//    background = Color.Black,
+//    onBackground = Color.White,
+//    surface = Color(0xFF121212), // Very dark gray, almost black
+//    onSurface = Color.White,
+//    surfaceVariant = Color(0xFF1E1E1E), // Dark gray
+//    onSurfaceVariant = Color(0xFFCCCCCC), // Light gray
+//    inverseSurface = Color.White,
+//    inverseOnSurface = Color.Black,
+//    outline = Color(0xFF424242), // Medium gray
+//)
+
+/**
+ * Black and Red Gaming gradient colors
+ */
+val BlackRedGamingGradientColors = GradientColors(
+    top = Color(0xFF2A1A1A), // Dark red-gray
+    bottom = Color(0xFF1A1A1A), // Dark gray
+    container = Color(0xFF1A1A1A), // Dark gray
+)
+
+/**
+ * Black and Red Gaming background theme
+ */
+val BlackRedGamingBackgroundTheme = BackgroundTheme(color = Color(0xFF1A1A1A))
+
+/**
  * Light Android gradient colors
  */
 val LightAndroidGradientColors = GradientColors(container = DarkGreenGray95)
@@ -170,6 +253,7 @@ val DarkAndroidBackgroundTheme = BackgroundTheme(color = Color.Black)
  * @param darkTheme Whether the theme should use a dark color scheme (follows system by default).
  * @param androidTheme Whether the theme should use the Android theme color scheme instead of the
  *        default theme.
+ * @param gamingTheme Whether the theme should use the black and red gaming theme.
  * @param disableDynamicTheming If `true`, disables the use of dynamic theming, even when it is
  *        supported. This parameter has no effect if [androidTheme] is `true`.
  */
@@ -177,11 +261,13 @@ val DarkAndroidBackgroundTheme = BackgroundTheme(color = Color.Black)
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     androidTheme: Boolean = false,
+    gamingTheme: Boolean = false,
     disableDynamicTheming: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     // Color scheme
     val colorScheme = when {
+        gamingTheme -> BlackRedGamingColorScheme
         androidTheme -> if (darkTheme) DarkAndroidColorScheme else LightAndroidColorScheme
         !disableDynamicTheming && supportsDynamicTheming() -> {
             val context = LocalContext.current
@@ -198,6 +284,7 @@ fun AppTheme(
         container = colorScheme.surface,
     )
     val gradientColors = when {
+        gamingTheme -> BlackRedGamingGradientColors
         androidTheme -> if (darkTheme) DarkAndroidGradientColors else LightAndroidGradientColors
         !disableDynamicTheming && supportsDynamicTheming() -> emptyGradientColors
         else -> defaultGradientColors
@@ -208,6 +295,7 @@ fun AppTheme(
         tonalElevation = 2.dp,
     )
     val backgroundTheme = when {
+        gamingTheme -> BlackRedGamingBackgroundTheme
         androidTheme -> if (darkTheme) DarkAndroidBackgroundTheme else LightAndroidBackgroundTheme
         else -> defaultBackgroundTheme
     }

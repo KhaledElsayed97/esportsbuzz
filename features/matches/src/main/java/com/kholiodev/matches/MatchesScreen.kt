@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,6 +20,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kholiodev.matches.R
 
 data class MatchItem(
@@ -48,7 +52,9 @@ internal fun MatchesRoute(
 }
 
 @Composable
-internal fun MatchesScreen() {
+internal fun MatchesScreen(
+    viewModel: MatchesViewModel = viewModel()
+) {
     val matches = remember {
         listOf(
             MatchItem(
@@ -124,15 +130,111 @@ internal fun MatchesScreen() {
         )
     }
 
-    LazyColumn(
+    val selectedGameFilter by viewModel.selectedGameFilter.collectAsState()
+    val availableGames by viewModel.availableGames.collectAsState()
+    val filteredMatches = viewModel.getFilteredMatches(matches)
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(matches) { match ->
-            MatchItemCard(match = match)
+        // Filter dropdown
+        GameFilterDropdown(
+            selectedGame = selectedGameFilter,
+            availableGames = availableGames,
+            onGameSelected = { viewModel.updateGameFilter(it) },
+            modifier = Modifier.padding(16.dp)
+        )
+        
+        // Matches list
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(bottom = 16.dp)
+        ) {
+            items(filteredMatches) { match ->
+                MatchItemCard(match = match)
+            }
+        }
+    }
+}
+
+@Composable
+fun GameFilterDropdown(
+    selectedGame: String,
+    availableGames: List<String>,
+    onGameSelected: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+    
+    Column(modifier = modifier) {
+        Text(
+            text = "Filter by Game",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        
+        Box {
+            OutlinedButton(
+                onClick = { expanded = true },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = selectedGame,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "Show dropdown menu",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surface)
+                    .width(IntrinsicSize.Min)
+            ) {
+                availableGames.forEach { game ->
+                    DropdownMenuItem(
+                        text = { 
+                            Text(
+                                text = game,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (game == selectedGame) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurface
+                                }
+                            )
+                        },
+                        onClick = {
+                            onGameSelected(game)
+                            expanded = false
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
         }
     }
 }
@@ -152,10 +254,8 @@ fun MatchItemCard(match: MatchItem) {
                 .padding(16.dp)
         ) {
             // Header with game type and tournament
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Box(
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Column {
                     Text(
@@ -172,8 +272,12 @@ fun MatchItemCard(match: MatchItem) {
                     )
                 }
                 
-                // Status indicator
-                StatusChip(status = match.status, timing = match.timing)
+                // Status indicator - anchored to top-right
+                StatusChip(
+                    status = match.status, 
+                    timing = match.timing,
+                    modifier = Modifier.align(Alignment.TopEnd)
+                )
             }
             
             Spacer(modifier = Modifier.height(12.dp))
@@ -240,19 +344,23 @@ fun MatchItemCard(match: MatchItem) {
 }
 
 @Composable
-fun StatusChip(status: MatchStatus, timing: String) {
+fun StatusChip(
+    status: MatchStatus, 
+    timing: String,
+    modifier: Modifier = Modifier
+) {
     val backgroundColor = when (status) {
-        MatchStatus.LIVE -> Color(0xFFE53935) // Red for live
-        MatchStatus.UPCOMING -> Color(0xFF1976D2) // Blue for upcoming
-        MatchStatus.FINISHED -> Color(0xFF388E3C) // Green for finished
+        MatchStatus.LIVE -> Color(0xFFE53E3E) // Dark red for live
+        MatchStatus.UPCOMING -> Color(0xFF3182CE) // Blue for upcoming
+        MatchStatus.FINISHED -> Color(0xFF38A169) // Green for finished
     }
-    
+
     val textColor = Color.White
     
     Surface(
         color = backgroundColor,
         shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.padding(4.dp)
+        modifier = modifier.padding(4.dp)
     ) {
         Text(
             text = timing,
@@ -329,6 +437,16 @@ fun PreviewMatchesScreen() {
 
 @Preview
 @Composable
+fun PreviewMatchesScreenWithFilter() {
+    MaterialTheme {
+        val viewModel = MatchesViewModel()
+        viewModel.updateGameFilter("CS:GO")
+        MatchesScreen(viewModel = viewModel)
+    }
+}
+
+@Preview
+@Composable
 fun PreviewMatchItemCard() {
     MaterialTheme {
         MatchItemCard(
@@ -346,6 +464,18 @@ fun PreviewMatchItemCard() {
                 status = MatchStatus.LIVE,
                 bestOf = "Bo1"
             )
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewGameFilterDropdown() {
+    MaterialTheme {
+        GameFilterDropdown(
+            selectedGame = "All",
+            availableGames = listOf("All", "CS:GO", "League of Legends", "Dota 2", "Valorant", "Overwatch 2"),
+            onGameSelected = {}
         )
     }
 }

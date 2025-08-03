@@ -2,6 +2,7 @@ package com.kholiodev.core.ui.components
 
 import android.R
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
@@ -13,7 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.SmallTopAppBar
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
@@ -25,9 +26,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,38 +50,25 @@ fun EbuzzTopAppBar(
     onLiveFilterChange: ((Boolean) -> Unit)? = null,
     onSearchClick: (() -> Unit)? = null,
     onCalendarClick: (() -> Unit)? = null,
-    colors: TopAppBarColors = TopAppBarDefaults.smallTopAppBarColors(),
+    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
 ) {
-    SmallTopAppBar(
+    TopAppBar(
         title = {
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.CenterStart
+            ) {
                 Text(
-                    text = stringResource(id = titleRes),
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    text = "ESPORTS\nBUZZ.",
+                    fontSize = 28.sp,
+                    fontFamily = FontFamily(Font(com.kholiodev.core.R.font.museomoderno_bold)),
+                    textAlign = TextAlign.Start
                 )
-                if (showLiveFilter && onLiveFilterChange != null) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Live", style = MaterialTheme.typography.bodyMedium)
-                        Switch(
-                            checked = liveFilterChecked,
-                            onCheckedChange = onLiveFilterChange,
-                            modifier = Modifier.padding(start = 4.dp)
-                        )
-                    }
-                }
             }
         },
         actions = {
-            if (onSearchClick != null) {
-                IconButton(onClick = onSearchClick) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search",
-                        tint = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
-            }
             if (onCalendarClick != null) {
                 IconButton(onClick = onCalendarClick) {
                     Icon(

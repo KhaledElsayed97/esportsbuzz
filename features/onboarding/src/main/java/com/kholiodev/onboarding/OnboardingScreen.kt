@@ -25,17 +25,23 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -49,6 +55,8 @@ internal fun OnboardingScreen(
     modifier: Modifier = Modifier,
     onGetStarted: () -> Unit = {},
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    
     val onboardingPagesList = listOf(
         OnboardingPage(
             R.raw.ill_gamers,
@@ -88,29 +96,87 @@ internal fun OnboardingScreen(
                 )
             }
         }
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 80.dp)
+                .padding(bottom = 32.dp)
                 .weight(1f),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            AnimatedVisibility(
-                visible = pagerState.currentPage != 2,
-                modifier = Modifier.fillMaxWidth(),
-                exit = ExitTransition.None
-            ) {
+            // Pagination indicators
                 HorizontalPagerIndicator(
                     pagerState = pagerState,
                     onBoardingPageList = onboardingPagesList
                 )
+            
+            // Navigation buttons
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Skip button (left)
+                TextButton(
+                    onClick = onGetStarted,
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text(
+                        text = "Skip",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                
+                // Next/Finish button (right)
+                AnimatedVisibility(
+                    visible = pagerState.currentPage != 2,
+                    modifier = Modifier
+                ) {
+                    Button(
+                        onClick = {
+                            // Go to next page
+                            if (pagerState.currentPage < onboardingPagesList.size - 1) {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                }
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        ),
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        Text(
+                            text = "Next",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+                
+                // Get Started button (right) - shown on last page
+                AnimatedVisibility(
+                    visible = pagerState.currentPage == 2,
+                    modifier = Modifier
+                ) {
+                    Button(
+                        onClick = onGetStarted,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        ),
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        Text(
+                            text = "Get Started",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
             }
-            FinishButton(
-                modifier = Modifier,
-                pagerState = pagerState,
-                onClick = onGetStarted,
-                onBoardingPageList = onboardingPagesList
-            )
         }
     }
 }
@@ -121,24 +187,23 @@ fun HorizontalPagerIndicator(
     pagerState: PagerState,
     onBoardingPageList: List<OnboardingPage>
 ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.Bottom
-        ) {
-
-            repeat(onBoardingPageList.size) { iteration ->
-                val color =
-                    if (pagerState.currentPage == iteration) MaterialTheme.colorScheme.primary else Color.LightGray
-                Box(
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .clip(CircleShape)
-                        .background(color)
-                        .size(10.dp)
-
-                )
-            }
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(vertical = 24.dp)
+    ) {
+        repeat(onBoardingPageList.size) { iteration ->
+            val color =
+                if (pagerState.currentPage == iteration) MaterialTheme.colorScheme.primary else Color.LightGray
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .clip(CircleShape)
+                    .background(color)
+                    .size(12.dp)
+            )
         }
+    }
 }
 
 @Composable
@@ -146,81 +211,58 @@ fun OnboardingPager(onboardingPage: OnboardingPage, lottieComposition: LottieCom
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.8f),
+            .fillMaxHeight(0.8f)
+            .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+        verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        Image(
-            modifier = Modifier
-                .fillMaxWidth(0.7f)
-                .padding(top = 48.dp),
-            painter = painterResource(id = R.drawable.ic_logo),
-            contentDescription = "Image",
-            contentScale = ContentScale.Crop
-        )
-        LottieAnimation(
-            composition = lottieComposition,
-            iterations = LottieConstants.IterateForever,
-            modifier = Modifier.fillMaxHeight(0.6f)
-        )
-        Text(
-            modifier = Modifier
-                .fillMaxWidth(),
-            text = onboardingPage.title,
-            style = MaterialTheme.typography.headlineLarge,
-            textAlign = TextAlign.Center
-        )
+        // Logo section
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 40.dp)
-                .padding(top = 8.dp),
-            text = onboardingPage.description,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleMedium
+                .padding(top = 32.dp),
+            text = "ESPORTS\nBUZZ.",
+            fontSize = 48.sp,
+            lineHeight = 36.sp,
+            fontFamily = FontFamily(Font(com.kholiodev.core.R.font.museomoderno_bold)),
+            textAlign = TextAlign.Center
         )
-    }
-
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun FinishButton(
-    modifier: Modifier, pagerState: PagerState, onClick: () -> Unit,
-    onBoardingPageList: List<OnboardingPage>
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        AnimatedVisibility(
-            visible = pagerState.currentPage == 2,
-            modifier = Modifier.fillMaxWidth(0.4f)
+        
+        // Lottie animation section
+        LottieAnimation(
+            composition = lottieComposition,
+            iterations = LottieConstants.IterateForever,
+            modifier = Modifier
+                .fillMaxHeight(0.4f)
+                .fillMaxWidth()
+        )
+        
+        // Content section
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Button(
-                onClick = onClick,
-                colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.primary)
-            ) {
-                Text(
-                    text = "GET STARTED",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.White
-                )
-            }
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = onboardingPage.title,
+                style = MaterialTheme.typography.headlineLarge,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = onboardingPage.description,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleMedium
+            )
         }
     }
-
 }
+
+
 
 @Preview
 @Composable
 fun OnboardingPagePreview() {
     AppTheme {
     }
-}
-
-@Composable
-fun OnboardingPage() {
-
 }
