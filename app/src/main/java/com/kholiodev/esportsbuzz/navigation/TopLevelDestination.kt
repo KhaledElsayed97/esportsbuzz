@@ -1,11 +1,5 @@
 package com.kholiodev.esportsbuzz.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.FavoriteBorder
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.kholiodev.esportsbuzz.R
 import com.kholiodev.matches.R as matchesR
 import com.kholiodev.news.R as newsR
@@ -32,7 +26,13 @@ enum class TopLevelDestination(
     FOLLOWING(
         selectedIcon = com.kholiodev.following.R.drawable.ic_star,
         unselectedIcon = com.kholiodev.following.R.drawable.ic_star,
-        iconTextId = followingR.string.following,
+        iconTextId = com.kholiodev.following.R.string.following,
         titleId = followingR.string.following
+    ),
+    MORE(
+        selectedIcon = com.kholiodev.more.R.drawable.ic_more,
+        unselectedIcon = com.kholiodev.more.R.drawable.ic_more,
+        iconTextId = com.kholiodev.more.R.string.more,
+        titleId = com.kholiodev.more.R.string.more
     )
 }

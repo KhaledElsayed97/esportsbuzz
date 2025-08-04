@@ -54,6 +54,7 @@ dependencies {
     implementation(projects.features.onboarding)
     implementation(projects.features.news)
     implementation(projects.features.following)
+    implementation(projects.features.more)
     implementation(projects.core)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtimeCompose)

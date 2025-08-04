@@ -3,6 +3,7 @@ package com.kholiodev.matches
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -23,6 +24,17 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kholiodev.matches.R
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
+
+data class WeekDayItem(
+    val date: LocalDate,
+    val dayName: String,
+    val dayNumber: String,
+    val isToday: Boolean,
+    val isSelected: Boolean
+)
 
 data class MatchItem(
     val id: String,
@@ -36,7 +48,8 @@ data class MatchItem(
     val team2Logo: Int,
     val timing: String,
     val status: MatchStatus,
-    val bestOf: String
+    val bestOf: String,
+    val date: LocalDate = LocalDate.now()
 )
 
 enum class MatchStatus {
@@ -45,16 +58,20 @@ enum class MatchStatus {
 
 @Composable
 internal fun MatchesRoute(
-    onTopicClick: (String) -> Unit,
+    onMatchClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    MatchesScreen()
+    MatchesScreen(onMatchClick = onMatchClick)
 }
 
 @Composable
 internal fun MatchesScreen(
+    onMatchClick: (String) -> Unit,
     viewModel: MatchesViewModel = viewModel()
 ) {
+    val today = LocalDate.now()
+    var selectedDate by remember { mutableStateOf(today) }
+    
     val matches = remember {
         listOf(
             MatchItem(
@@ -69,7 +86,8 @@ internal fun MatchesScreen(
                 team2Logo = R.drawable.ic_scores, // Using placeholder
                 timing = "LIVE",
                 status = MatchStatus.LIVE,
-                bestOf = "Bo1"
+                bestOf = "Bo1",
+                date = today
             ),
             MatchItem(
                 id = "2",
@@ -83,7 +101,8 @@ internal fun MatchesScreen(
                 team2Logo = R.drawable.ic_scores,
                 timing = "In 2 hours",
                 status = MatchStatus.UPCOMING,
-                bestOf = "Bo5"
+                bestOf = "Bo5",
+                date = today
             ),
             MatchItem(
                 id = "3",
@@ -97,7 +116,8 @@ internal fun MatchesScreen(
                 team2Logo = R.drawable.ic_scores,
                 timing = "Finished",
                 status = MatchStatus.FINISHED,
-                bestOf = "Bo5"
+                bestOf = "Bo5",
+                date = today.minusDays(1)
             ),
             MatchItem(
                 id = "4",
@@ -111,7 +131,8 @@ internal fun MatchesScreen(
                 team2Logo = R.drawable.ic_scores,
                 timing = "LIVE",
                 status = MatchStatus.LIVE,
-                bestOf = "Bo3"
+                bestOf = "Bo3",
+                date = today.plusDays(1)
             ),
             MatchItem(
                 id = "5",
@@ -125,7 +146,8 @@ internal fun MatchesScreen(
                 team2Logo = R.drawable.ic_scores,
                 timing = "Tomorrow 15:00",
                 status = MatchStatus.UPCOMING,
-                bestOf = "Bo7"
+                bestOf = "Bo7",
+                date = today.plusDays(2)
             )
         )
     }
@@ -133,12 +155,23 @@ internal fun MatchesScreen(
     val selectedGameFilter by viewModel.selectedGameFilter.collectAsState()
     val availableGames by viewModel.availableGames.collectAsState()
     val filteredMatches = viewModel.getFilteredMatches(matches)
+    
+    // Filter matches by selected date
+    val matchesForSelectedDate = filteredMatches.filter { it.date == selectedDate }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
+        
+        // Weekday selector
+        WeekDaySelector(
+            selectedDate = selectedDate,
+            onDateSelected = { selectedDate = it },
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+        
         // Filter dropdown
         GameFilterDropdown(
             selectedGame = selectedGameFilter,
@@ -155,8 +188,11 @@ internal fun MatchesScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            items(filteredMatches) { match ->
-                MatchItemCard(match = match)
+            items(matchesForSelectedDate) { match ->
+                MatchItemCard(
+                    match = match,
+                    onClick = { onMatchClick(match.id) }
+                )
             }
         }
     }
@@ -240,13 +276,19 @@ fun GameFilterDropdown(
 }
 
 @Composable
-fun MatchItemCard(match: MatchItem) {
-    Card(
+fun MatchItemCard(
+    match: MatchItem,
+    onClick: () -> Unit
+) {
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
             .height(140.dp),
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 2.dp,
+        shadowElevation = 4.dp,
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier
@@ -427,23 +469,105 @@ fun TeamInfo(
     }
 }
 
-@Preview
 @Composable
-fun PreviewMatchesScreen() {
-    MaterialTheme {
-        MatchesScreen()
+fun WeekDaySelector(
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val today = LocalDate.now()
+    val weekDays = remember(selectedDate) {
+        (-3..3).map { dayOffset ->
+            val date = today.plusDays(dayOffset.toLong())
+            WeekDayItem(
+                date = date,
+                dayName = if (date == today) "Today" else date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                dayNumber = date.dayOfMonth.toString(),
+                isToday = date == today,
+                isSelected = date == selectedDate
+            )
+        }
+    }
+    
+    LazyRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 4.dp)
+    ) {
+        items(weekDays) { weekDay ->
+            WeekDayItem(
+                weekDay = weekDay,
+                onClick = { onDateSelected(weekDay.date) }
+            )
+        }
     }
 }
 
-@Preview
 @Composable
-fun PreviewMatchesScreenWithFilter() {
-    MaterialTheme {
-        val viewModel = MatchesViewModel()
-        viewModel.updateGameFilter("CS:GO")
-        MatchesScreen(viewModel = viewModel)
+fun WeekDayItem(
+    weekDay: WeekDayItem,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(12.dp),
+        color = when {
+            weekDay.isSelected -> MaterialTheme.colorScheme.primary
+            weekDay.isToday -> MaterialTheme.colorScheme.primaryContainer
+            else -> MaterialTheme.colorScheme.surface
+        },
+        tonalElevation = if (weekDay.isSelected) 0.dp else 2.dp,
+        shadowElevation = if (weekDay.isSelected) 0.dp else 1.dp,
+        modifier = Modifier.width(48.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(vertical = 12.dp, horizontal = 4.dp)
+        ) {
+            Text(
+                text = weekDay.dayName,
+                style = MaterialTheme.typography.labelSmall,
+                color = when {
+                    weekDay.isSelected -> MaterialTheme.colorScheme.onPrimary
+                    weekDay.isToday -> MaterialTheme.colorScheme.onPrimaryContainer
+                    else -> MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                fontWeight = if (weekDay.isToday || weekDay.isSelected) FontWeight.Bold else FontWeight.Normal
+            )
+            
+            Spacer(modifier = Modifier.height(4.dp))
+            
+            Text(
+                text = weekDay.dayNumber,
+                style = MaterialTheme.typography.titleMedium,
+                color = when {
+                    weekDay.isSelected -> MaterialTheme.colorScheme.onPrimary
+                    weekDay.isToday -> MaterialTheme.colorScheme.onPrimaryContainer
+                    else -> MaterialTheme.colorScheme.onSurface
+                },
+                fontWeight = if (weekDay.isToday || weekDay.isSelected) FontWeight.Bold else FontWeight.Normal
+            )
+        }
     }
 }
+
+//@Preview
+//@Composable
+//fun PreviewMatchesScreen() {
+//    MaterialTheme {
+//        MatchesScreen()
+//    }
+//}
+//
+//@Preview
+//@Composable
+//fun PreviewMatchesScreenWithFilter() {
+//    MaterialTheme {
+//        val viewModel = MatchesViewModel()
+//        viewModel.updateGameFilter("CS:GO")
+//        MatchesScreen(viewModel = viewModel)
+//    }
+//}
 
 @Preview
 @Composable
@@ -462,8 +586,10 @@ fun PreviewMatchItemCard() {
                 team2Logo = R.drawable.ic_scores,
                 timing = "LIVE",
                 status = MatchStatus.LIVE,
-                bestOf = "Bo1"
-            )
+                bestOf = "Bo1",
+                date = LocalDate.now()
+            ),
+            onClick = {}
         )
     }
 }
@@ -476,6 +602,17 @@ fun PreviewGameFilterDropdown() {
             selectedGame = "All",
             availableGames = listOf("All", "CS:GO", "League of Legends", "Dota 2", "Valorant", "Overwatch 2"),
             onGameSelected = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewWeekDaySelector() {
+    MaterialTheme {
+        WeekDaySelector(
+            selectedDate = LocalDate.now(),
+            onDateSelected = {}
         )
     }
 }

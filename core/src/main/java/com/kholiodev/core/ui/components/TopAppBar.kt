@@ -61,22 +61,11 @@ fun EbuzzTopAppBar(
                 Text(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    text = "ESPORTS\nBUZZ.",
-                    fontSize = 28.sp,
+                    text = "ESPORTSBUZZ.",
+                    fontSize = 36.sp,
                     fontFamily = FontFamily(Font(com.kholiodev.core.R.font.museomoderno_bold)),
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Center
                 )
-            }
-        },
-        actions = {
-            if (onCalendarClick != null) {
-                IconButton(onClick = onCalendarClick) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Calendar",
-                        tint = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
             }
         },
         colors = colors

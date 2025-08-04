@@ -50,6 +50,7 @@ import com.kholiodev.esportsbuzz.navigation.AppNavHost
 import com.kholiodev.esportsbuzz.navigation.TopLevelDestination
 import com.kholiodev.following.navigation.followingRoute
 import com.kholiodev.matches.navigation.matchesRoute
+import com.kholiodev.more.navigation.moreRoute
 import com.kholiodev.news.navigation.newsRoute
 import com.kholiodev.onboarding.navigation.onboardingRoute
 import kotlinx.coroutines.launch
@@ -69,7 +70,9 @@ fun App(
     var showSettingsDialog by rememberSaveable {
         mutableStateOf(false)
     }
-    val shouldShowBottomBar = appState.currentDestination?.route != onboardingRoute
+    val shouldShowBottomBar = appState.currentDestination?.route?.let { route ->
+        route != onboardingRoute && !route.startsWith("match_details_route")
+    } ?: true
     var liveFilterChecked by rememberSaveable { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     
@@ -176,6 +179,7 @@ fun EbuzzBottomAppBar(
                     TopLevelDestination.MATCHES -> currentDestination?.route == matchesRoute
                     TopLevelDestination.NEWS -> currentDestination?.route == newsRoute
                     TopLevelDestination.FOLLOWING -> currentDestination?.route == followingRoute
+                    TopLevelDestination.MORE -> currentDestination?.route == moreRoute
                 }
                 EbuzzNavigationBarItem(
                     selected = selected,
