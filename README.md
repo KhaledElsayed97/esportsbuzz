@@ -4,6 +4,15 @@
 
 A modern Android application built with Jetpack Compose for esports enthusiasts to stay updated with matches, news, and follow their favorite teams and players.
 
+<img width="274" height="601" alt="image" src="https://github.com/user-attachments/assets/3b1cc152-58c5-4e7b-8861-ce225865bcc9" />
+<img width="274" height="601" alt="image" src="https://github.com/user-attachments/assets/dcaa32e8-7ef1-4bd3-b17b-637624b33e95" />
+<img width="274" height="601" alt="image" src="https://github.com/user-attachments/assets/6531df30-c100-4cfa-acff-4afb0a6e6bb8" />
+<img width="274" height="601" alt="image" src="https://github.com/user-attachments/assets/ddc7db4d-9f55-498b-9ccd-b985e5df304c" />
+<img width="274" height="601" alt="image" src="https://github.com/user-attachments/assets/04341023-8dbf-4eba-9f3c-0b89cfda1f07" />
+
+
+
+
 ## 🎮 Features
 
 ### Core Features
