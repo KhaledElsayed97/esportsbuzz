@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -27,7 +28,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kholiodev.matches.R
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import kotlinx.coroutines.launch
+
+sealed class TeamLogo {
+    data class Resource(val resId: Int) : TeamLogo()
+    data class Url(val url: String) : TeamLogo()
+}
 
 data class Player(
     val id: String,
@@ -39,7 +47,7 @@ data class Player(
 
 data class TeamLineup(
     val teamName: String,
-    val teamLogo: Int,
+    val teamLogo: TeamLogo,
     val players: List<Player>,
     val coach: String
 )
@@ -144,15 +152,6 @@ internal fun MatchDetailsScreen(
                     MatchHeader(match = match)
                 }
 
-                // Tournament Info
-                item {
-                    TournamentInfoCard(
-                        match = match,
-                        onViewStandings = onViewStandings,
-                        onViewBrackets = onViewBrackets
-                    )
-                }
-
                 // Teams and Score
                 item {
                     TeamsScoreCard(match = match)
@@ -181,6 +180,15 @@ internal fun MatchDetailsScreen(
                     item {
                         MatchStatsCard(match = match)
                     }
+                }
+
+                // Tournament Info
+                item {
+                    TournamentInfoCard(
+                        match = match,
+                        onViewStandings = onViewStandings,
+                        onViewBrackets = onViewBrackets
+                    )
                 }
             }
         }
@@ -266,6 +274,15 @@ fun TournamentInfoCard(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 12.dp)
+            )
+            
+            // Tournament Title
+            Text(
+                text = match.tournamentName,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(bottom = 16.dp)
             )
             
             Row(
@@ -368,7 +385,7 @@ fun TeamsScoreCard(match: MatchDetails) {
 @Composable
 fun TeamInfo(
     teamName: String,
-    teamLogo: Int,
+    teamLogo: TeamLogo,
     isWinning: Boolean
 ) {
     Column(
@@ -385,12 +402,27 @@ fun TeamInfo(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxSize()
             ) {
-                Icon(
-                    painter = painterResource(teamLogo),
-                    contentDescription = "$teamName logo",
-                    modifier = Modifier.size(32.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                when (teamLogo) {
+                    is TeamLogo.Resource -> {
+                        Icon(
+                            painter = painterResource(teamLogo.resId),
+                            contentDescription = "$teamName logo",
+                            modifier = Modifier.size(32.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    is TeamLogo.Url -> {
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(teamLogo.url)
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = "$teamName logo",
+                            modifier = Modifier.size(32.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
             }
         }
         

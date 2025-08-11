@@ -37,7 +37,7 @@ class MatchDetailsViewModel : ViewModel() {
                 tournamentType = TournamentType.LEAGUE,
                 team1 = TeamLineup(
                     teamName = "Team Liquid",
-                    teamLogo = R.drawable.ic_scores,
+                    teamLogo = TeamLogo.Url("https://i.postimg.cc/FK4PTPSW/Team-Liquidlogo-square-Dark.webp"),
                     players = listOf(
                         Player("1", "EliGE", "Rifler", "25/15/8"),
                         Player("2", "NAF", "Rifler", "22/18/6"),
@@ -48,8 +48,8 @@ class MatchDetailsViewModel : ViewModel() {
                     coach = "adreN"
                 ),
                 team2 = TeamLineup(
-                    teamName = "FaZe Clan",
-                    teamLogo = R.drawable.ic_scores,
+                    teamName = "G2 Esports",
+                    teamLogo = TeamLogo.Url("https://i.postimg.cc/RV2pHCZz/G2-Esports-2020-lightmode.png"),
                     players = listOf(
                         Player("6", "karrigan", "IGL", "16/24/10"),
                         Player("7", "rain", "Rifler", "19/19/5"),
@@ -59,8 +59,8 @@ class MatchDetailsViewModel : ViewModel() {
                     ),
                     coach = "RobbaN"
                 ),
-                team1Score = "16",
-                team2Score = "14",
+                team1Score = "10",
+                team2Score = "6",
                 status = MatchStatus.LIVE,
                 timing = "LIVE",
                 bestOf = "Bo1",
@@ -74,7 +74,7 @@ class MatchDetailsViewModel : ViewModel() {
                 tournamentType = TournamentType.TOURNAMENT,
                 team1 = TeamLineup(
                     teamName = "T1",
-                    teamLogo = R.drawable.ic_scores,
+                    teamLogo = TeamLogo.Url("https://i.postimg.cc/jSmTCYGW/img-faker.jpg"),
                     players = listOf(
                         Player("11", "Zeus", "Top", "3/2/8"),
                         Player("12", "Oner", "Jungle", "2/3/12"),
@@ -86,7 +86,7 @@ class MatchDetailsViewModel : ViewModel() {
                 ),
                 team2 = TeamLineup(
                     teamName = "Gen.G",
-                    teamLogo = R.drawable.ic_scores,
+                    teamLogo = TeamLogo.Url("https://prnt.sc/sokvWocPZH05"),
                     players = listOf(
                         Player("16", "Doran", "Top", "2/4/6"),
                         Player("17", "Peanut", "Jungle", "3/5/8"),
@@ -110,7 +110,7 @@ class MatchDetailsViewModel : ViewModel() {
                 tournamentType = TournamentType.PLAYOFFS,
                 team1 = TeamLineup(
                     teamName = "Team Spirit",
-                    teamLogo = R.drawable.ic_scores,
+                    teamLogo = TeamLogo.Resource(R.drawable.ic_scores),
                     players = listOf(
                         Player("21", "Yatoro", "Carry", "15/3/8"),
                         Player("22", "Larl", "Mid", "8/5/12"),
@@ -122,7 +122,7 @@ class MatchDetailsViewModel : ViewModel() {
                 ),
                 team2 = TeamLineup(
                     teamName = "PSG.LGD",
-                    teamLogo = R.drawable.ic_scores,
+                    teamLogo = TeamLogo.Resource(R.drawable.ic_scores),
                     players = listOf(
                         Player("26", "shiro", "Carry", "12/6/7"),
                         Player("27", "NothingToSay", "Mid", "7/4/10"),
@@ -146,7 +146,7 @@ class MatchDetailsViewModel : ViewModel() {
                 tournamentType = TournamentType.TOURNAMENT,
                 team1 = TeamLineup(
                     teamName = "Sentinels",
-                    teamLogo = R.drawable.ic_scores,
+                    teamLogo = TeamLogo.Resource(R.drawable.ic_scores),
                     players = listOf(
                         Player("31", "TenZ", "Duelist", "18/12/4"),
                         Player("32", "ShahZaM", "IGL", "12/15/8"),
@@ -158,7 +158,7 @@ class MatchDetailsViewModel : ViewModel() {
                 ),
                 team2 = TeamLineup(
                     teamName = "LOUD",
-                    teamLogo = R.drawable.ic_scores,
+                    teamLogo = TeamLogo.Resource(R.drawable.ic_scores),
                     players = listOf(
                         Player("36", "aspas", "Duelist", "16/14/5"),
                         Player("37", "saadhak", "IGL", "11/16/9"),
@@ -183,7 +183,7 @@ class MatchDetailsViewModel : ViewModel() {
                 tournamentType = TournamentType.LEAGUE,
                 team1 = TeamLineup(
                     teamName = "Dallas Fuel",
-                    teamLogo = R.drawable.ic_scores,
+                    teamLogo = TeamLogo.Resource(R.drawable.ic_scores),
                     players = listOf(
                         Player("41", "Fearless", "Tank", "15/8/12"),
                         Player("42", "Sp9rk1e", "DPS", "22/10/8"),
@@ -195,7 +195,7 @@ class MatchDetailsViewModel : ViewModel() {
                 ),
                 team2 = TeamLineup(
                     teamName = "San Francisco Shock",
-                    teamLogo = R.drawable.ic_scores,
+                    teamLogo = TeamLogo.Resource(R.drawable.ic_scores),
                     players = listOf(
                         Player("46", "Coluge", "Tank", "12/10/14"),
                         Player("47", "Proper", "DPS", "20/11/9"),
@@ -219,7 +219,7 @@ class MatchDetailsViewModel : ViewModel() {
                 tournamentType = TournamentType.LEAGUE,
                 team1 = TeamLineup(
                     teamName = "Team A",
-                    teamLogo = R.drawable.ic_scores,
+                    teamLogo = TeamLogo.Resource(R.drawable.ic_scores),
                     players = listOf(
                         Player("1", "Player 1", "Role 1"),
                         Player("2", "Player 2", "Role 2"),
@@ -231,7 +231,7 @@ class MatchDetailsViewModel : ViewModel() {
                 ),
                 team2 = TeamLineup(
                     teamName = "Team B",
-                    teamLogo = R.drawable.ic_scores,
+                    teamLogo = TeamLogo.Resource(R.drawable.ic_scores),
                     players = listOf(
                         Player("6", "Player 6", "Role 1"),
                         Player("7", "Player 7", "Role 2"),

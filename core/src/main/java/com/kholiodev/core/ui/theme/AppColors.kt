@@ -2,6 +2,11 @@ package com.kholiodev.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+// New accent color
+val AccentColor = Color(0xFF0D173B)
+// Lighter version for containers - made lighter for better visibility
+val AccentColorLight = Color(0xFF2A3A6B)
+
 internal val Blue10 = Color(0xFF001F28)
 internal val Blue20 = Color(0xFF003544)
 internal val Blue30 = Color(0xFF004D61)

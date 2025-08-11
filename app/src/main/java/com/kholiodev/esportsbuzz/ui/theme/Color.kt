@@ -2,6 +2,11 @@ package com.kholiodev.esportsbuzz.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+// New accent color
+val AccentColor = Color(0xFF0D173B)
+// Lighter version for containers - made lighter for better visibility
+val AccentColorLight = Color(0xFF2A3A6B)
+
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)

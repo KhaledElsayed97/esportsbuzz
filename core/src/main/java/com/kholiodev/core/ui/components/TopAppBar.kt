@@ -50,7 +50,12 @@ fun EbuzzTopAppBar(
     onLiveFilterChange: ((Boolean) -> Unit)? = null,
     onSearchClick: (() -> Unit)? = null,
     onCalendarClick: (() -> Unit)? = null,
-    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
+    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+        actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+    ),
 ) {
     TopAppBar(
         title = {
@@ -64,7 +69,8 @@ fun EbuzzTopAppBar(
                     text = "ESPORTSBUZZ.",
                     fontSize = 36.sp,
                     fontFamily = FontFamily(Font(com.kholiodev.core.R.font.museomoderno_bold)),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         },

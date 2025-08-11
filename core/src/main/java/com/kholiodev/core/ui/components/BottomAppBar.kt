@@ -19,6 +19,7 @@ fun EbuzzNavigationBar(
 ) {
     NavigationBar(
         modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         tonalElevation = 0.dp,
         content = content,
@@ -44,9 +45,9 @@ fun RowScope.EbuzzNavigationBarItem(
         label = label,
         alwaysShowLabel = alwaysShowLabel,
         colors = NavigationBarItemDefaults.colors(
-            selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            selectedIconColor = MaterialTheme.colorScheme.primary,
             unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            selectedTextColor = MaterialTheme.colorScheme.primary,
             unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
             indicatorColor = MaterialTheme.colorScheme.primaryContainer,
         ),

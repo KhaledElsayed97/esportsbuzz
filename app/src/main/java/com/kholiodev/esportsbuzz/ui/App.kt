@@ -76,7 +76,7 @@ fun App(
     var liveFilterChecked by rememberSaveable { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     
-    AppTheme(gamingTheme = false) {
+    AppTheme {
         AppBackground {
             AppGradientBackground(
                 gradientColors = if (shouldShowGradientBackground) {

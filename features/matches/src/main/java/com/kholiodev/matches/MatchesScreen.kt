@@ -15,15 +15,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kholiodev.matches.R
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
@@ -44,8 +44,8 @@ data class MatchItem(
     val team2Name: String,
     val team1Score: String,
     val team2Score: String,
-    val team1Logo: Int,
-    val team2Logo: Int,
+    val team1Logo: String,
+    val team2Logo: String,
     val timing: String,
     val status: MatchStatus,
     val bestOf: String,
@@ -71,7 +71,7 @@ internal fun MatchesScreen(
 ) {
     val today = LocalDate.now()
     var selectedDate by remember { mutableStateOf(today) }
-    
+
     val matches = remember {
         listOf(
             MatchItem(
@@ -79,11 +79,11 @@ internal fun MatchesScreen(
                 gameType = "CS:GO",
                 tournamentName = "ESL Pro League Season 18",
                 team1Name = "Team Liquid",
-                team2Name = "FaZe Clan",
-                team1Score = "16",
-                team2Score = "14",
-                team1Logo = R.drawable.ic_scores, // Using placeholder
-                team2Logo = R.drawable.ic_scores, // Using placeholder
+                team2Name = "G2 Esports",
+                team1Score = "10",
+                team2Score = "6",
+                team1Logo = "https://i.postimg.cc/FK4PTPSW/Team-Liquidlogo-square-Dark.webp", // Team Liquid logo from URL
+                team2Logo = "https://i.postimg.cc/RV2pHCZz/G2-Esports-2020-lightmode.png", // FaZe Clan using placeholder
                 timing = "LIVE",
                 status = MatchStatus.LIVE,
                 bestOf = "Bo1",
@@ -97,8 +97,8 @@ internal fun MatchesScreen(
                 team2Name = "Gen.G",
                 team1Score = "2",
                 team2Score = "1",
-                team1Logo = R.drawable.ic_scores,
-                team2Logo = R.drawable.ic_scores,
+                team1Logo = "https://i.postimg.cc/bJYmhs31/T1-esports-logo-svg.png", // T1 logo from URL
+                team2Logo = "https://i.postimg.cc/q7x1S8Xk/geng-logo.png", // Gen.G logo from URL
                 timing = "In 2 hours",
                 status = MatchStatus.UPCOMING,
                 bestOf = "Bo5",
@@ -108,16 +108,16 @@ internal fun MatchesScreen(
                 id = "3",
                 gameType = "Dota 2",
                 tournamentName = "The International 2024",
-                team1Name = "Team Spirit",
-                team2Name = "PSG.LGD",
+                team1Name = "Fnatic",
+                team2Name = "Navi",
                 team1Score = "3",
                 team2Score = "2",
-                team1Logo = R.drawable.ic_scores,
-                team2Logo = R.drawable.ic_scores,
-                timing = "Finished",
-                status = MatchStatus.FINISHED,
+                team1Logo = "https://i.postimg.cc/W3MqXnMn/Esports-organization-Fnatic-logo-svg.png", // T1 logo from URL
+                team2Logo = "https://i.postimg.cc/Xq4GhCL0/NAVI-Logo-svg.png",
+                timing = "In 10 hours",
+                status = MatchStatus.UPCOMING,
                 bestOf = "Bo5",
-                date = today.minusDays(1)
+                date = today
             ),
             MatchItem(
                 id = "4",
@@ -127,8 +127,8 @@ internal fun MatchesScreen(
                 team2Name = "LOUD",
                 team1Score = "13",
                 team2Score = "11",
-                team1Logo = R.drawable.ic_scores,
-                team2Logo = R.drawable.ic_scores,
+                team1Logo = "https://i.postimg.cc/bJYmhs31/T1-esports-logo-svg.png", // T1 logo from URL
+                team2Logo = "https://i.postimg.cc/q7x1S8Xk/geng-logo.png",
                 timing = "LIVE",
                 status = MatchStatus.LIVE,
                 bestOf = "Bo3",
@@ -142,8 +142,8 @@ internal fun MatchesScreen(
                 team2Name = "San Francisco Shock",
                 team1Score = "3",
                 team2Score = "1",
-                team1Logo = R.drawable.ic_scores,
-                team2Logo = R.drawable.ic_scores,
+                team1Logo = "https://i.postimg.cc/bJYmhs31/T1-esports-logo-svg.png", // T1 logo from URL
+                team2Logo = "https://i.postimg.cc/q7x1S8Xk/geng-logo.png",
                 timing = "Tomorrow 15:00",
                 status = MatchStatus.UPCOMING,
                 bestOf = "Bo7",
@@ -155,7 +155,7 @@ internal fun MatchesScreen(
     val selectedGameFilter by viewModel.selectedGameFilter.collectAsState()
     val availableGames by viewModel.availableGames.collectAsState()
     val filteredMatches = viewModel.getFilteredMatches(matches)
-    
+
     // Filter matches by selected date
     val matchesForSelectedDate = filteredMatches.filter { it.date == selectedDate }
 
@@ -164,14 +164,14 @@ internal fun MatchesScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        
+
         // Weekday selector
         WeekDaySelector(
             selectedDate = selectedDate,
             onDateSelected = { selectedDate = it },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
-        
+
         // Filter dropdown
         GameFilterDropdown(
             selectedGame = selectedGameFilter,
@@ -179,7 +179,7 @@ internal fun MatchesScreen(
             onGameSelected = { viewModel.updateGameFilter(it) },
             modifier = Modifier.padding(16.dp)
         )
-        
+
         // Matches list
         LazyColumn(
             modifier = Modifier
@@ -206,7 +206,7 @@ fun GameFilterDropdown(
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
-    
+
     Column(modifier = modifier) {
         Text(
             text = "Filter by Game",
@@ -215,7 +215,7 @@ fun GameFilterDropdown(
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        
+
         Box {
             OutlinedButton(
                 onClick = { expanded = true },
@@ -242,7 +242,7 @@ fun GameFilterDropdown(
                     )
                 }
             }
-            
+
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
@@ -252,7 +252,7 @@ fun GameFilterDropdown(
             ) {
                 availableGames.forEach { game ->
                     DropdownMenuItem(
-                        text = { 
+                        text = {
                             Text(
                                 text = game,
                                 style = MaterialTheme.typography.bodyMedium,
@@ -313,17 +313,17 @@ fun MatchItemCard(
                         maxLines = 1
                     )
                 }
-                
+
                 // Status indicator - anchored to top-right
                 StatusChip(
-                    status = match.status, 
+                    status = match.status,
                     timing = match.timing,
                     modifier = Modifier.align(Alignment.TopEnd)
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             // Teams and scores
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -337,7 +337,7 @@ fun MatchItemCard(
                     teamLogo = match.team1Logo,
                     isWinning = match.status == MatchStatus.FINISHED && match.team1Score.toIntOrNull() ?: 0 > match.team2Score.toIntOrNull() ?: 0
                 )
-                
+
                 // VS or Score
                 if (match.status == MatchStatus.UPCOMING) {
                     Column(
@@ -372,7 +372,7 @@ fun MatchItemCard(
                         )
                     }
                 }
-                
+
                 // Team 2
                 TeamInfo(
                     teamName = match.team2Name,
@@ -387,18 +387,18 @@ fun MatchItemCard(
 
 @Composable
 fun StatusChip(
-    status: MatchStatus, 
+    status: MatchStatus,
     timing: String,
     modifier: Modifier = Modifier
 ) {
     val backgroundColor = when (status) {
         MatchStatus.LIVE -> Color(0xFFE53E3E) // Dark red for live
-        MatchStatus.UPCOMING -> Color(0xFF3182CE) // Blue for upcoming
+        MatchStatus.UPCOMING -> Color(0xFF0D173B) // Blue for upcoming
         MatchStatus.FINISHED -> Color(0xFF38A169) // Green for finished
     }
 
     val textColor = Color.White
-    
+
     Surface(
         color = backgroundColor,
         shape = RoundedCornerShape(16.dp),
@@ -418,7 +418,7 @@ fun StatusChip(
 fun TeamInfo(
     teamName: String,
     teamScore: String,
-    teamLogo: Int,
+    teamLogo: String,
     isWinning: Boolean
 ) {
     Column(
@@ -436,17 +436,20 @@ fun TeamInfo(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxSize()
             ) {
-                Icon(
-                    painter = painterResource(teamLogo),
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(teamLogo)
+                        .crossfade(true)
+                        .build(),
                     contentDescription = "$teamName logo",
-                    modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    modifier = Modifier.size(46.dp),
+                    contentScale = ContentScale.Fit
                 )
             }
         }
-        
+
         Spacer(modifier = Modifier.height(4.dp))
-        
+
         // Team Name
         Text(
             text = teamName,
@@ -456,7 +459,7 @@ fun TeamInfo(
             textAlign = TextAlign.Center,
             maxLines = 2
         )
-        
+
         // Score (only show for live/finished matches)
         if (isWinning) {
             Text(
@@ -481,14 +484,17 @@ fun WeekDaySelector(
             val date = today.plusDays(dayOffset.toLong())
             WeekDayItem(
                 date = date,
-                dayName = if (date == today) "Today" else date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                dayName = if (date == today) "Today" else date.dayOfWeek.getDisplayName(
+                    TextStyle.SHORT,
+                    Locale.getDefault()
+                ),
                 dayNumber = date.dayOfMonth.toString(),
                 isToday = date == today,
                 isSelected = date == selectedDate
             )
         }
     }
-    
+
     LazyRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -534,9 +540,9 @@ fun WeekDayItem(
                 },
                 fontWeight = if (weekDay.isToday || weekDay.isSelected) FontWeight.Bold else FontWeight.Normal
             )
-            
+
             Spacer(modifier = Modifier.height(4.dp))
-            
+
             Text(
                 text = weekDay.dayNumber,
                 style = MaterialTheme.typography.titleMedium,
@@ -582,8 +588,8 @@ fun PreviewMatchItemCard() {
                 team2Name = "FaZe Clan",
                 team1Score = "16",
                 team2Score = "14",
-                team1Logo = R.drawable.ic_scores,
-                team2Logo = R.drawable.ic_scores,
+                team1Logo = "https://i.postimg.cc/bJYmhs31/T1-esports-logo-svg.png", // T1 logo from URL
+                team2Logo = "https://i.postimg.cc/q7x1S8Xk/geng-logo.png",
                 timing = "LIVE",
                 status = MatchStatus.LIVE,
                 bestOf = "Bo1",
@@ -600,7 +606,14 @@ fun PreviewGameFilterDropdown() {
     MaterialTheme {
         GameFilterDropdown(
             selectedGame = "All",
-            availableGames = listOf("All", "CS:GO", "League of Legends", "Dota 2", "Valorant", "Overwatch 2"),
+            availableGames = listOf(
+                "All",
+                "CS:GO",
+                "League of Legends",
+                "Dota 2",
+                "Valorant",
+                "Overwatch 2"
+            ),
             onGameSelected = {}
         )
     }

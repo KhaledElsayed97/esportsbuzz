@@ -21,10 +21,10 @@ import androidx.compose.ui.unit.dp
 
 @VisibleForTesting
 val LightDefaultColorScheme = lightColorScheme(
-    primary = Purple40,
+    primary = AccentColor,
     onPrimary = Color.White,
-    primaryContainer = Purple90,
-    onPrimaryContainer = Purple10,
+    primaryContainer = AccentColorLight,
+    onPrimaryContainer = Color.White,
     secondary = Orange40,
     onSecondary = Color.White,
     secondaryContainer = Orange90,
@@ -53,10 +53,10 @@ val LightDefaultColorScheme = lightColorScheme(
  */
 @VisibleForTesting
 val DarkDefaultColorScheme = darkColorScheme(
-    primary = Purple80,
-    onPrimary = Purple20,
-    primaryContainer = Purple30,
-    onPrimaryContainer = Purple90,
+    primary = AccentColor,
+    onPrimary = Color.White,
+    primaryContainer = AccentColorLight,
+    onPrimaryContainer = Color.White,
     secondary = Orange80,
     onSecondary = Orange20,
     secondaryContainer = Orange30,
@@ -148,42 +148,78 @@ val DarkAndroidColorScheme = darkColorScheme(
  * Black and Red Gaming Theme
  */
 @VisibleForTesting
-val BlackRedGamingColorScheme = darkColorScheme(
-    primary = Color(0xFFFF3D3D),              // Bright red
-    onPrimary = Color.Black,
-    primaryContainer = Color(0xFF5B0000),     // Still dark, but slightly warmer
-    onPrimaryContainer = Color(0xFFFFC1C1),   // Brighter blush
+val DeepNavyGamingColorScheme = darkColorScheme(
+    primary = Color(0xFF003049),              // Deep navy blue
+    onPrimary = Color.White,
+    primaryContainer = Color(0xFF0A4C78),     // Brighter navy for contrast
+    onPrimaryContainer = Color(0xFFD1E8FF),   // Light blue-tinted white
 
-    secondary = Color(0xFFFF6B6B),            // Lighter vibrant red-pink
-    onSecondary = Color.Black,
-    secondaryContainer = Color(0xFF6B1B1B),   // Muted warm red
-    onSecondaryContainer = Color(0xFFFFD4D4),
+    secondary = Color(0xFF0077B6),            // Vibrant azure blue
+    onSecondary = Color.White,
+    secondaryContainer = Color(0xFF003B5C),   // Muted deep blue
+    onSecondaryContainer = Color(0xFFB3E5FF), // Soft pastel blue
 
-    tertiary = Color(0xFFFF9AA2),             // Warm coral-pink
+    tertiary = Color(0xFF90E0EF),             // Light cyan for accent contrast
     onTertiary = Color.Black,
-    tertiaryContainer = Color(0xFF652C36),    // Dark muted rose
-    onTertiaryContainer = Color(0xFFFFE3E8),
+    tertiaryContainer = Color(0xFF005E73),    // Deep teal-blue
+    onTertiaryContainer = Color(0xFFCCF7FF),  // Gentle icy white-blue
 
-    error = Color(0xFFFF5C5C),                // Bright but not neon red
+    error = Color(0xFFFF6B6B),                // Warm coral-red for errors
     onError = Color.Black,
     errorContainer = Color(0xFF8B0000),
     onErrorContainer = Color.White,
 
-    background = Color(0xFF1A1A1A),           // Dark gray instead of black
-    onBackground = Color(0xFFF0EAEA),         // Soft off-white with red tint
+    background = Color(0xFF0D1B2A),           // Very dark blue-gray
+    onBackground = Color(0xFFE0E8F0),         // Soft, slightly blue-tinted white
 
-    surface = Color(0xFF2D2D2D),              // Lighter surface for cards
-    onSurface = Color(0xFFF5EDED),            // Even softer for text
+    surface = Color(0xFF1B263B),              // Navy-gray for cards
+    onSurface = Color(0xFFF0F4FA),            // Almost white with cool tint
 
-    surfaceVariant = Color(0xFF3D2A2A),       // Slightly lighter red-brown
-    onSurfaceVariant = Color(0xFFE3BDBD),
+    surfaceVariant = Color(0xFF2E4057),       // Mid-tone navy variant
+    onSurfaceVariant = Color(0xFFB4C6D8),     // Muted sky-blue gray
 
-    inverseSurface = Color(0xFFF4F0F0),
-    inverseOnSurface = Color(0xFF300000),
+    inverseSurface = Color(0xFFE0E8F0),
+    inverseOnSurface = Color(0xFF00111A),
 
-    outline = Color(0xFFE57373)
-
+    outline = Color(0xFF5A7D9A)               // Muted steel-blue for borders
 )
+
+val DeepNavyGamingLightColorScheme = lightColorScheme(
+    primary = Color(0xFF003049),              // Deep navy blue
+    onPrimary = Color.White,
+    primaryContainer = Color(0xFFD1E8FF),     // Very light blue container
+    onPrimaryContainer = Color(0xFF001F33),   // Darker navy for text
+
+    secondary = Color(0xFF0077B6),            // Bright azure
+    onSecondary = Color.White,
+    secondaryContainer = Color(0xFFC9EDFF),   // Pale blue background for secondary
+    onSecondaryContainer = Color(0xFF002B40), // Deep blue text
+
+    tertiary = Color(0xFF0096C7),             // Medium cyan-teal
+    onTertiary = Color.White,
+    tertiaryContainer = Color(0xFFB8F1FF),    // Soft icy cyan
+    onTertiaryContainer = Color(0xFF003640),  // Deep teal text
+
+    error = Color(0xFFBA1A1A),                // Standard Material red
+    onError = Color.White,
+    errorContainer = Color(0xFFFFDAD6),       // Soft blush
+    onErrorContainer = Color(0xFF410002),     // Dark red text
+
+    background = Color(0xFFFAFCFF),           // Off-white with cool tint
+    onBackground = Color(0xFF1A1D1F),         // Deep gray for contrast
+
+    surface = Color(0xFFF8FAFC),              // Slightly cool light surface
+    onSurface = Color(0xFF1B1F22),            // Dark text
+
+    surfaceVariant = Color(0xFFE1E9F0),       // Cool pale blue-gray
+    onSurfaceVariant = Color(0xFF444B53),     // Mid-tone blue-gray
+
+    inverseSurface = Color(0xFF2E4057),       // Dark navy-gray
+    inverseOnSurface = Color(0xFFEAF1F8),     // Light text
+
+    outline = Color(0xFF748A9E)               // Muted steel-blue for outlines
+)
+
 
 //val BlackRedGamingColorScheme = darkColorScheme(
 //    primary = Color(0xFFFF1744), // Bright red
@@ -261,30 +297,27 @@ val DarkAndroidBackgroundTheme = BackgroundTheme(color = Color.Black)
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     androidTheme: Boolean = false,
-    gamingTheme: Boolean = false,
     disableDynamicTheming: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     // Color scheme
     val colorScheme = when {
-        gamingTheme -> BlackRedGamingColorScheme
         androidTheme -> if (darkTheme) DarkAndroidColorScheme else LightAndroidColorScheme
         !disableDynamicTheming && supportsDynamicTheming() -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        else -> if (darkTheme) DarkDefaultColorScheme else LightDefaultColorScheme
+        else -> if (darkTheme) DeepNavyGamingColorScheme else DeepNavyGamingLightColorScheme
     }
     // Gradient colors
     val emptyGradientColors = GradientColors(container = colorScheme.surfaceColorAtElevation(2.dp))
     val defaultGradientColors = GradientColors(
-        top = colorScheme.inverseOnSurface,
+        top = AccentColor,
         bottom = colorScheme.primaryContainer,
         container = colorScheme.surface,
     )
     val gradientColors = when {
-        gamingTheme -> BlackRedGamingGradientColors
         androidTheme -> if (darkTheme) DarkAndroidGradientColors else LightAndroidGradientColors
         !disableDynamicTheming && supportsDynamicTheming() -> emptyGradientColors
         else -> defaultGradientColors
@@ -295,7 +328,6 @@ fun AppTheme(
         tonalElevation = 2.dp,
     )
     val backgroundTheme = when {
-        gamingTheme -> BlackRedGamingBackgroundTheme
         androidTheme -> if (darkTheme) DarkAndroidBackgroundTheme else LightAndroidBackgroundTheme
         else -> defaultBackgroundTheme
     }
